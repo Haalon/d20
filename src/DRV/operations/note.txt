@@ -1,0 +1,5 @@
+These functions depend on DRV class, which in turn imports them and assigns as methods
+
+By having these functions in separate folder we avoid `ReferenceError: can't access lexical declaration before initialization` error
+
+Since contents of this folder go before DRV class in bundle

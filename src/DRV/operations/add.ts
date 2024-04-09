@@ -1,9 +1,9 @@
+import { DRV } from "../DRV";
+import { binaryReduce } from "../utils/binaryReduce";
 import { cache } from "../utils/cache";
-import { DRV } from "./DRV";
 
 function addInternal(p: DRV, q: DRV): DRV {
-  const resultMin = p.minVal + q.minVal;
-
+  const resultMin = p.minValue + q.minValue;
   const resultProbabilities = [];
 
   for (let i = 0; i < p.probabilities.length + q.probabilities.length - 1; i++) {
@@ -18,4 +18,6 @@ function addInternal(p: DRV, q: DRV): DRV {
   return new DRV(resultMin, resultProbabilities, p.hash + "+" + q.hash);
 }
 
-export const add = cache(addInternal, (p, q) => p.hash + "+" + q.hash);
+const addCached = cache(addInternal, (p, q) => p.hash + "+" + q.hash);
+
+export const add = (...args: DRV[]) => binaryReduce(addCached, args);
