@@ -1,4 +1,5 @@
 import { add } from "./operations/add";
+import { max } from "./operations/max";
 import { min } from "./operations/min";
 
 // discrete random variable
@@ -88,6 +89,14 @@ export class DRV {
   }
   lowestOf(n: number) {
     return min(...new Array<DRV>(n).fill(this));
+  }
+
+  static max = max;
+  max(...args: DRV[]) {
+    return DRV.max(this, ...args);
+  }
+  highestOf(n: number) {
+    return max(...new Array<DRV>(n).fill(this));
   }
 
   static add = add;

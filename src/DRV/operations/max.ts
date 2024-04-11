@@ -2,9 +2,9 @@ import { DRV } from "../DRV";
 import { binaryReduce } from "../utils/binaryReduce";
 import { cache } from "../utils/cache";
 
-function minInternal(p: DRV, q: DRV): DRV {
-  const resultBase = Math.min(p.minValue, q.minValue);
-  const maxVal = Math.min(p.maxValue, q.maxValue);
+function maxInternal(p: DRV, q: DRV): DRV {
+  const resultBase = Math.max(p.minValue, q.minValue);
+  const maxVal = Math.max(p.maxValue, q.maxValue);
 
   const probabilities = [];
 
@@ -12,7 +12,7 @@ function minInternal(p: DRV, q: DRV): DRV {
   let p_acc = 1;
   let q_acc = 1;
 
-  for (let i = resultBase; i <= maxVal; i++) {
+  for (let i = maxVal; i >= resultBase; i--) {
     let probability = 0;
 
     const p_prob = p.probabilityAtValue(i);
@@ -22,12 +22,12 @@ function minInternal(p: DRV, q: DRV): DRV {
     p_acc -= p_prob;
     q_acc -= q_prob;
 
-    probabilities.push(probability);
+    probabilities.unshift(probability);
   }
 
-  return new DRV(resultBase, probabilities, `min(${p.hash}, ${q.hash})`);
+  return new DRV(resultBase, probabilities, `max(${p.hash}, ${q.hash})`);
 }
 
-const minCached = cache(minInternal, (p, q) => `min(${p.hash}, ${q.hash})`);
+const maxCached = cache(maxInternal, (p, q) => `max(${p.hash}, ${q.hash})`);
 
-export const min = (...args: DRV[]) => binaryReduce(minCached, args);
+export const max = (...args: DRV[]) => binaryReduce(maxCached, args);

@@ -1,11 +1,13 @@
 import App from "./App.svelte";
 import { DRV } from "./DRV/DRV";
 import { add } from "./DRV/operations/add";
+import { max } from "./DRV/operations/max";
 import { min } from "./DRV/operations/min";
 import "./app.css";
 
 window.DRV = DRV;
 window.min = min;
+window.max = max;
 window.add = add;
 
 window.d4 = DRV.Die(4);
