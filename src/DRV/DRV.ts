@@ -1,6 +1,7 @@
 import { add } from "./operations/add";
 import { max } from "./operations/max";
 import { min } from "./operations/min";
+import { sub } from "./operations/sub";
 
 // discrete random variable
 export class DRV {
@@ -105,5 +106,10 @@ export class DRV {
   }
   times(n: number) {
     return add(...new Array<DRV>(n).fill(this));
+  }
+
+  static sub = sub;
+  sub(other: DRV) {
+    return sub(this, other);
   }
 }
