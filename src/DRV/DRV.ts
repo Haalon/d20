@@ -1,14 +1,16 @@
-import { add } from "./operations/add";
+import { add, multiply, sub } from "./operations/combine";
+import { map } from "./operations/map";
 import { max } from "./operations/max";
 import { min } from "./operations/min";
-import { sub } from "./operations/sub";
+
+import { range } from "./utils/range";
 
 // discrete random variable
 export class DRV {
-  readonly base: number;
-  readonly probabilities: readonly number[];
+  private readonly base: number;
+  private readonly probabilities: readonly number[];
 
-  readonly hash: string;
+  hash: string;
 
   constructor(base = 1, probabilities = [1], hash?: string) {
     this.base = base;
@@ -21,8 +23,9 @@ export class DRV {
     return new DRV(1, new Array(n).fill(1 / n), `d${n}`);
   }
 
-  static Die0(n: number) {
-    return new DRV(0, new Array(n + 1).fill(1 / (n + 1)), `p${n}`);
+  static Uniform(from: number, to: number) {
+    const size = to - from + 1;
+    return new DRV(from, new Array(size).fill(1 / size), `u(${to},${from})`);
   }
 
   static Const(n: number) {
@@ -44,8 +47,8 @@ export class DRV {
     return this.base + this.probabilities.length - 1;
   }
 
-  *values() {
-    for (let i = 0; i < this.probabilities.length; i++) {
+  *values(reverse = false) {
+    for (const i of range(0, this.probabilities.length, reverse ? -1 : 1)) {
       const element = this.probabilities[i];
       if (!element) continue;
 
@@ -53,8 +56,8 @@ export class DRV {
     }
   }
 
-  *items() {
-    for (let i = 0; i < this.probabilities.length; i++) {
+  *items(reverse = false) {
+    for (const i of range(0, this.probabilities.length, reverse ? -1 : 1)) {
       const element = this.probabilities[i];
       if (!element) continue;
 
@@ -63,25 +66,7 @@ export class DRV {
   }
 
   map(fun: (num: number) => number, getHash: (hash: string) => string) {
-    const dict = new Map<number, number>();
-    let newBase = Number.POSITIVE_INFINITY;
-    let newMax = Number.NEGATIVE_INFINITY;
-
-    for (const [num, prob] of this.items()) {
-      const newNum = fun(num);
-
-      newBase = newNum < newBase ? newNum : newBase;
-      newMax = newNum > newMax ? newNum : newMax;
-
-      dict.set(newNum, dict.has(newNum) ? dict.get(newNum)! + prob : prob);
-    }
-
-    const probabilities = new Array<number>(newMax - newBase + 1).fill(0);
-    for (const [num, prob] of dict.entries()) {
-      probabilities[num - newBase] = prob;
-    }
-
-    return new DRV(newBase, probabilities, getHash?.(this.hash));
+    return map(this, fun, getHash);
   }
 
   static min = min;
@@ -106,6 +91,11 @@ export class DRV {
   }
   times(n: number) {
     return add(...new Array<DRV>(n).fill(this));
+  }
+
+  static multiply = multiply;
+  multiply(...args: DRV[]) {
+    return DRV.multiply(this, ...args);
   }
 
   static sub = sub;

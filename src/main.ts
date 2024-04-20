@@ -1,6 +1,6 @@
 import App from "./App.svelte";
 import { DRV } from "./DRV/DRV";
-import { add } from "./DRV/operations/add";
+import { add } from "./DRV/operations/combine";
 import { max } from "./DRV/operations/max";
 import { min } from "./DRV/operations/min";
 import "./app.css";
